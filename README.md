@@ -1,3 +1,12 @@
+Link do kanału na yt: https://www.youtube.com/watch?v=1IWzMuJKv6o
+
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+
+
+Ja nie używam npm ale yarn.
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>

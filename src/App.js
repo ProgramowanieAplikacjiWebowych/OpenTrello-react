@@ -13,6 +13,7 @@ import NewBookPage from "./components/pages/NewBookPage";
 import UserRoute from "./components/routes/UserRoute";
 import GuestRoute from "./components/routes/GuestRoute";
 import TopNavigation from "./components/navigation/TopNavigation";
+import Board from "./components/pages/Board";
 
 const App = ({ location, isAuthenticated }) => (
   <div className="ui container">
@@ -24,6 +25,11 @@ const App = ({ location, isAuthenticated }) => (
       exact
       component={ConfirmationPage}
     />
+    <Route 
+      location={location}   
+      path='/board' 
+      component={Board}>
+    </Route>
     <GuestRoute location={location} path="/login" exact component={LoginPage} />
     <GuestRoute
       location={location}

@@ -28,8 +28,8 @@ const App = ({ location, isAuthenticated }) => (
     <Route 
       location={location}   
       path='/board' 
-      component={Board}>
-    </Route>
+      component={Board}
+    />
     <GuestRoute location={location} path="/login" exact component={LoginPage} />
     <GuestRoute
       location={location}

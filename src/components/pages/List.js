@@ -1,41 +1,39 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Card from './Card';
 
 class List extends React.Component {
-
-    // constructor (props) {
-    //     super(props);
-    // }
 
     state = {
         id: null,
         text: '',
         listId: null
     }
-
-    componentDidMount() {
-        console.log('@@@dupa', this.props, this.state);
-    }
-
+    
     render() {
         const cards = this.props.cards;
         const cardList = cards.filter((card) => {
             if (card.listId === this.props.list.listId) {
-                return card
+                return card;
             }
         });
-        console.log('aaaa ', cardList);
-        let a = cardList.map((card) =>
-            <li  className="list-group-item"  key={card.id}><Card card={card}></Card></li>
+
+        const a = cardList.map((card) =>
+            <div className="list-group-item" key={card.id}><Card card={card} /></div>
         );
-        console.log('aaadupa ', a);
 
         return (
-            <ul className="list-group" style={{ border: '1px solid pink' }}>
+            <div className="list-group">
                 {a}
-            </ul>
+            </div>
         )
     }
+}
+
+List.propTypes = {
+    cards: PropTypes.arrayOf(PropTypes.instanceOf(Object)).isRequired,
+    list: PropTypes.instanceOf(Object).isRequired
 }
 
 export default List;

@@ -1,4 +1,4 @@
-import { CARD_MOVED, LIST_REMOVED, LIST_ADDED } from "../types";
+import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_CARD, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD } from "../types";
 
 const initialState = {
     // tmp 
@@ -6,16 +6,32 @@ const initialState = {
         {
             id: 0,
             text: 'Card 1',
-            listId: 1
+            listId: 1,
+            comments: [
+                {
+                    id: 0,
+                    owner: 'Andrzej',
+                    text: 'Jakiś komentarz'
+                }
+            ]
         },
         {
             id: 1,
             text: 'Card 2',
-            listId: 0
-        }, {
+            listId: 0,
+            comments: [
+                {
+                    id: 0,
+                    owner: 'Czesław',
+                    text: 'Siema!'
+                }
+            ]
+        }, 
+        {
             id: 2,
             text: 'Card 3',
-            listId: 0
+            listId: 0,
+            comments: []
         }
     ],
     lists: [
@@ -49,14 +65,21 @@ export default function board(state = initialState, action = {}) {
                 cards: [...updateCards(state, action.card)]
             };
         case LIST_REMOVED:
-            return {
-                ...state,
-                lists: action.lists
-            }
         case LIST_ADDED: 
+        case LIST_EDITTED: 
             return {
                 ...state,
                 lists: action.lists
+            };
+        case CARD_ADDED: 
+        case CARD_REMOVED:
+        case CARD_MOVED_ON_CARD:
+        case ADDED_COMMENT_TO_CARD:
+        case REMOVED_COMMENT_FROM_CARD:
+        console.log('@@@ reducer', action);
+            return {
+                ...state,
+                cards: action.cards
             }
         default:
             return state;

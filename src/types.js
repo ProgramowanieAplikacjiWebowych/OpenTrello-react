@@ -3,6 +3,13 @@ export const USER_LOGGED_OUT = "USER_LOGGED_OUT";
 export const BOOKS_FETCHED = "BOOKS_FETCHED";
 export const BOOK_CREATED = "BOOK_CREATED";
 
-export const CARD_MOVED = "CARD_MOVED";
 export const LIST_REMOVED = "LIST_REMOVED";
 export const LIST_ADDED = "LIST_ADDED";
+export const LIST_EDITTED = "LIST_EDITTED";
+
+export const CARD_MOVED = "CARD_MOVED";
+export const CARD_ADDED = "CARD_ADDED";
+export const CARD_REMOVED = "CARD_REMOVED";
+export const CARD_MOVED_ON_CARD = "CARD_MOVED_ON_CARD";
+export const ADDED_COMMENT_TO_CARD = "ADDED_COMMENT_TO_CARD";
+export const REMOVED_COMMENT_FROM_CARD = "REMOVED_COMMENT_FROM_CARD";

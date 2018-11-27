@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom'
 
 
-import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard } from '../../actions/board';
+import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted } from '../../actions/board';
 import Card from './Card';
 import FormComponent from './Form';
 import CardDetails from './CardDetails';
@@ -112,14 +112,14 @@ class List extends React.Component {
         };
     }
 
-    deleteComment = (comment) => {
+    deleteComment = (card, comment) => {
         const cards = [...this.props.cards];
-        let index = cards.findIndex((item) => { // TUTAJ DO POPRAWY. THIS JAK W ADDED
-            return item === this.state.cardId;
-        });
+        // let index = cards.findIndex((item) => { // TUTAJ DO POPRAWY. THIS JAK W ADDED
+        //     return item === this.state.cardId;
+        // });
 
-        const comments = cards[index].comments;
-        index = comments.findIndex((item) => {
+        const comments = card.comments;
+        const index = comments.findIndex((item) => {
             return item === comment;
         });
 
@@ -127,6 +127,37 @@ class List extends React.Component {
 
         this.setState({ cards });
         this.props.removeCommentFromCard(cards);
+    }
+
+    editComment = (card, comment) => {
+        const cards = [...this.props.cards];
+
+        const comments = card.comments;
+        const index = comments.findIndex((item) => {
+            return item.id === comment.id;
+        });
+
+        comments[index] = comment;
+
+        this.setState({ cards });
+        this.props.editComment(cards);
+    }
+
+    editCardName = (card) => {
+        const cards = [...this.props.cards];
+        
+        const index = cards.findIndex((item) => {
+            return item.id === card.id;
+        });
+        
+        cards[index] = card;
+
+        this.setState({ cards });
+        this.props.editCardName(cards);
+    }
+
+    editCardDescription = (card) => {
+        this.editCardName(card); // funkcje robią to samo
     }
 
     openCardDetails = (e, id) => {
@@ -187,7 +218,13 @@ class List extends React.Component {
                     alignItems: "center",
                     boxSizing: "border-box"
                 }}>
-                <CardDetails card={card} closeDetails={this.closeCardDetails} addCommentToCard={(e) => this.addCommentToCard(e)} deleteComment={this.deleteComment} />
+                <CardDetails card={card} 
+                    closeDetails={this.closeCardDetails} 
+                    addCommentToCard={(e) => this.addCommentToCard(e)} 
+                    deleteComment={this.deleteComment}
+                    editComment={this.editComment}
+                    editCardName={this.editCardName}
+                    editCardDescription={this.editCardDescription} />
             </div>
         }
 
@@ -207,7 +244,8 @@ List.propTypes = {
     removeCard: PropTypes.func,
     moveCard: PropTypes.func,
     addCommentToCard: PropTypes.func,
-    removeCommentFromCard: PropTypes.func
+    removeCommentFromCard: PropTypes.func,
+    editCardName: PropTypes.func
 }
 
 const mapDispatchToState = dispatch => {
@@ -216,6 +254,8 @@ const mapDispatchToState = dispatch => {
         moveCard: cards => dispatch(cardMovedOnList(cards)),
         addCommentToCard: cards => dispatch(addedCommentToCard(cards)),
         removeCommentFromCard: cards => dispatch(removedCommentFromCard(cards)),
+        editComment: cards => dispatch(edittedComment(cards)),
+        editCardName: (cards) => dispatch(cardNameEditted(cards)),
     }
 }
 

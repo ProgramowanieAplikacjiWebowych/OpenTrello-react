@@ -5,7 +5,7 @@ import { Form, Button, Grid, Segment, Image } from "semantic-ui-react";
 import InlineError from "../messages/InlineError";
 
 import List from './List';
-import { cardMoved, listRemoved, listAdded, listEditted, cardAdded } from '../../actions/board';
+import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved } from '../../actions/board';
 import FormComponent from './Form';
 
 class Board extends React.Component {
@@ -23,10 +23,32 @@ class Board extends React.Component {
     }
 
     onDrop = (ev, list) => {
-        const card = JSON.parse(ev.dataTransfer.getData('card'));
+        ev.preventDefault();
+        if (ev.dataTransfer.types.indexOf('card') >= 0) {
+            const card = JSON.parse(ev.dataTransfer.getData('card'));
+            
+            card.listId = list.listId
+            this.props.moveCard(card);
+        } else if (ev.dataTransfer.types.indexOf('list') >= 0) {
+            const movedList = JSON.parse(ev.dataTransfer.getData('list'));
+            const lists = [...this.props.lists];
+            console.log('list list list ', list);
 
-        card.listId = list.listId
-        this.props.moveCard(card);
+            const movedListIndex = lists.findIndex(item => {
+                return item.listId === movedList.listId;
+            });
+
+            const moveToindex = lists.findIndex(item => {
+                return item.listId === list.listId;
+            });
+
+            const movedElement = lists.splice(movedListIndex, 1);
+
+            lists.splice(moveToindex, 0, ...movedElement);
+            
+            this.props.moveList(lists);
+
+        }
     }
 
     onChange = e => {
@@ -34,6 +56,11 @@ class Board extends React.Component {
             data: { ...this.state.data, [e.target.name]: e.target.value },
             errors: { ...this.state.errors, [e.target.name]: '' }
         });
+    }
+      
+    onDragStart = (ev, element) => {
+        console.log('Drag start list', element);
+        ev.dataTransfer.setData('list', JSON.stringify(element));
     }
 
     getPlaceholder() {
@@ -144,6 +171,7 @@ class Board extends React.Component {
         
         this.closeCreateNewListPopup();
     }
+  
 
     render() {
         let popup = null;
@@ -183,7 +211,7 @@ class Board extends React.Component {
             );
         }
 
-        console.log('Boards', this.props.cards, this.props.cards);
+        console.log('Boards', this.props.cards, this.props.lists);
         const lists = this.props.lists;
         const listsList = lists.map((list) => {
             return (
@@ -193,11 +221,13 @@ class Board extends React.Component {
                     key={list.listId}
                 >
                     <div style={{
-                        textAlign: "center",
-                        borderBottom: "1px solid pink",
-                        background: "aliceblue",
-                        height: "34px"
-                    }}>
+                            textAlign: "center",
+                            borderBottom: "1px solid pink",
+                            background: "aliceblue",
+                            height: "34px"
+                        }}
+                        draggable
+                        onDragStart={(e) => this.onDragStart(e, list)}>
                         {list.name}
                         <button onClick={(e) => this.deleteList(e, list.listId)}>X</button>
                         <button onClick={(e) => this.editList(e, list.listId)}>E</button>
@@ -226,6 +256,7 @@ class Board extends React.Component {
 
 Board.propTypes = {
     moveCard: PropTypes.func,
+    moveList: PropTypes.func,
     removeList: PropTypes.func,
     editList: PropTypes.func,
     addList: PropTypes.func,
@@ -245,6 +276,7 @@ function mapStateToProps(state) {
 const mapDispatchToState = dispatch => {
     return {
         moveCard: card => dispatch(cardMoved(card)),
+        moveList: lists => dispatch(listMoved(lists)),
         removeList: lists => dispatch(listRemoved(lists)),
         addList: lists => dispatch(listAdded(lists)),
         editList: lists => dispatch(listEditted(lists)),

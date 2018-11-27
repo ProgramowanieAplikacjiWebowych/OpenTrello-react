@@ -33,8 +33,16 @@ Card.propTypes = {
 
 const mapDispatchToState = dispatch => {
     return {
-        updateCards: card => dispatch(cardMoved(card))
+        updateCards: card => dispatch(cardMoved(card)),
     }
-}
+};
 
-export default connect(null, mapDispatchToState)(Card);
+const mapStateToProps = (state) => {
+    console.log('card mapStateToProps', state);
+    return {
+        cards: state.board.cards,
+        lists: state.board.lists
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToState)(Card);

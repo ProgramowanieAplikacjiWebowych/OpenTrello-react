@@ -1,4 +1,5 @@
-import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_CARD, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD } from "../types";
+import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_CARD, 
+    ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, EDITTED_CARD_NAME, LIST_MOVED } from "../types";
 
 const initialState = {
     // tmp 
@@ -13,7 +14,8 @@ const initialState = {
                     owner: 'Andrzej',
                     text: 'Jakiś komentarz'
                 }
-            ]
+            ],
+            description: 'Trzeba naprawić coś... Tylko co?'
         },
         {
             id: 1,
@@ -25,13 +27,15 @@ const initialState = {
                     owner: 'Czesław',
                     text: 'Siema!'
                 }
-            ]
+            ],
+            description: 'Opis musi być'
         }, 
         {
             id: 2,
             text: 'Card 3',
             listId: 0,
-            comments: []
+            comments: [],
+            description: 'Opis musi mieć ileśtam znaków'
         }
     ],
     lists: [
@@ -67,6 +71,7 @@ export default function board(state = initialState, action = {}) {
         case LIST_REMOVED:
         case LIST_ADDED: 
         case LIST_EDITTED: 
+        case LIST_MOVED:
             return {
                 ...state,
                 lists: action.lists
@@ -76,10 +81,17 @@ export default function board(state = initialState, action = {}) {
         case CARD_MOVED_ON_CARD:
         case ADDED_COMMENT_TO_CARD:
         case REMOVED_COMMENT_FROM_CARD:
-        console.log('@@@ reducer', action);
+        case EDITTED_COMMENT:
+            console.log('@@@ reducer', action);
             return {
                 ...state,
                 cards: action.cards
+            }
+        case EDITTED_CARD_NAME:
+            return {
+                ...state,
+                cards: action.cards,
+                lists: state.lists
             }
         default:
             return state;

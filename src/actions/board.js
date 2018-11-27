@@ -1,4 +1,6 @@
-import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_CARD, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD } from "../types";
+import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, 
+    CARD_MOVED_ON_CARD, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
+    EDITTED_CARD_NAME, LIST_MOVED } from "../types";
 
 export const cardMoved = data => ({
     type: CARD_MOVED,
@@ -44,3 +46,22 @@ export const removedCommentFromCard = data => ({
     type: REMOVED_COMMENT_FROM_CARD,
     cards: data
 });
+
+export const edittedComment = data => ({
+    type: EDITTED_COMMENT,
+    cards: data
+});
+
+export const listMoved = data => ({
+    type: LIST_MOVED,
+    lists: data
+});
+
+export const cardNameEditted = (cards, list) => {
+    console.log('cardNameEditted', cards, list);
+    return ({
+        type: EDITTED_CARD_NAME,
+        cards,
+        list
+    });
+};

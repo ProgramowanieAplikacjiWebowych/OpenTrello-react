@@ -7,6 +7,7 @@ import InlineError from "../messages/InlineError";
 import List from './List';
 import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved } from '../../actions/board';
 import FormComponent from './Form';
+import History from './History';
 
 class Board extends React.Component {
     state = {
@@ -26,9 +27,15 @@ class Board extends React.Component {
         ev.preventDefault();
         if (ev.dataTransfer.types.indexOf('card') >= 0) {
             const card = JSON.parse(ev.dataTransfer.getData('card'));
-            
+            if (card.listId === list.listId) {
+                return;
+            }
+            const oldList = this.props.lists.find(item => {
+                return item.listId === card.listId;
+            });
+
             card.listId = list.listId
-            this.props.moveCard(card);
+            this.props.moveCard(card, oldList.name, list.name);
         } else if (ev.dataTransfer.types.indexOf('list') >= 0) {
             const movedList = JSON.parse(ev.dataTransfer.getData('list'));
             const lists = [...this.props.lists];
@@ -46,7 +53,7 @@ class Board extends React.Component {
 
             lists.splice(moveToindex, 0, ...movedElement);
             
-            this.props.moveList(lists);
+            this.props.moveList(lists, movedElement[0].name);
 
         }
     }
@@ -95,13 +102,14 @@ class Board extends React.Component {
         const listToEdit = this.state.listToEdit
         const lists = [...this.props.lists];
         const index = lists.findIndex((item) => {
-            return item.listId === listToEdit;
+            return item.listId === listToEdit.listId;
         });
-
-        lists[index].name = this.state.data.name;
+        const oldName = lists[index].name;
+        const newName = this.state.data.name
+        lists[index].name = newName;
 
         this.setState({ lists });
-        this.props.editList(lists);
+        this.props.editList(lists, oldName, newName);
     }
 
     addNewList = () => {
@@ -115,7 +123,7 @@ class Board extends React.Component {
         newLists.push(newList)
 
         this.setState({ lists: newLists });
-        this.props.addList(newLists);
+        this.props.addList(newLists, newList.name);
 
     }
 
@@ -135,23 +143,25 @@ class Board extends React.Component {
         this.closeCreateNewListPopup();
     }
 
-    deleteList = (e, listId) => {
+    deleteList = (e, list) => {
         const lists = [...this.props.lists];
         const index = lists.findIndex((item) => {
-            return item.listId === listId;
+            return item.listId === list.listId;
         });
+        const listName = lists[index].name; // needed to proper display history
+
         lists.splice(index, 1);
 
         this.setState({ lists });
-        this.props.removeList(lists);
+        this.props.removeList(lists, listName);
     }
 
-    editList = (e, listId) => {
-        this.setState({ editListPopupVisible: true, listToEdit: listId });
+    editList = (e, list) => {
+        this.setState({ editListPopupVisible: true, listToEdit: list });
     }
 
-    addCardToList = (e, listId) => {
-        this.setState({ newCardPopupVisible: true, listToEdit: listId })
+    addCardToList = (e, list) => {
+        this.setState({ newCardPopupVisible: true, listToEdit: list });
     }
 
     addNewCard = (e) => {
@@ -162,12 +172,14 @@ class Board extends React.Component {
         const cardItem = {
             id: card ? card.id + 1 : 0,
             text: this.state.data.name,
-            listId: this.state.listToEdit
+            listId: this.state.listToEdit.listId
         }
+        const listName = this.state.listToEdit.name;
+
         cards.push(cardItem)
 
         this.setState({ cards });
-        this.props.addNewCardToList(cards);
+        this.props.addNewCardToList(cards, cardItem.text, listName);
         
         this.closeCreateNewListPopup();
     }
@@ -179,35 +191,6 @@ class Board extends React.Component {
             popup = (
                 <FormComponent onSubmit={this.state.newCardPopupVisible ? (e) => this.addNewCard(e) : (e) => this.createNewOrEditList(e)} loading={this.state.loading}
                     errors={this.state.errors} closePopup={this.closeCreateNewListPopup} placeholder={this.getPlaceholder()} data={this.state.data} onChange={this.onChange}/>
-                // <Form onSubmit={this.state.newCardPopupVisible ? (e) => this.addNewCard(e) : (e) => this.createNewOrEditList(e)} loading={this.state.loading}>
-                //     <Grid columns={2} stackable>
-                //         <Grid.Row>
-                //             <Grid.Column>
-                //                 <Form.Field error={!!this.state.errors.name}>
-                //                     {this.state.editListPopupVisible ? <label htmlFor="name">List new name</label> : <label htmlFor="name">New list name</label>}
-                //                     <input
-                //                         type="text"
-                //                         id="name"
-                //                         name="name"
-                //                         placeholder={this.getPlaceholder()}
-                //                         value={this.state.data.name}
-                //                         onChange={this.onChange}
-                //                     />
-                //                     {this.state.errors.name && <InlineError text={this.state.errors.name} />}
-                //                 </Form.Field>
-
-                //                 <Grid.Row>
-                //                     <Grid.Column>
-                //                         <Button primary>Create</Button>
-                //                     </Grid.Column>
-                //                     <Grid.Column>
-                //                         <Button type="button" onClick={this.closeCreateNewListPopup} secondary>Cancel</Button>
-                //                     </Grid.Column>
-                //                 </Grid.Row>
-                //             </Grid.Column>
-                //         </Grid.Row>
-                //     </Grid>
-                // </Form>
             );
         }
 
@@ -229,9 +212,9 @@ class Board extends React.Component {
                         draggable
                         onDragStart={(e) => this.onDragStart(e, list)}>
                         {list.name}
-                        <button onClick={(e) => this.deleteList(e, list.listId)}>X</button>
-                        <button onClick={(e) => this.editList(e, list.listId)}>E</button>
-                        <button onClick={(e) => this.addCardToList(e, list.listId)}>A</button>
+                        <button onClick={(e) => this.deleteList(e, list)}>X</button>
+                        <button onClick={(e) => this.editList(e, list)}>E</button>
+                        <button onClick={(e) => this.addCardToList(e, list)}>A</button>
                     </div>
 
                     <List cards={this.props.cards} list={list} />
@@ -244,11 +227,13 @@ class Board extends React.Component {
                 <button onClick={this.openCreateNewListPopup}>Create New List</button>
                 {popup}
                 <div style={{
-                    display: 'inline-flex',
-                    width: '90%'
-                }}>
+                        display: 'inline-flex',
+                        width: '90%'
+                    }}>
                     {listsList}
                 </div>
+                
+                <History />
             </div>
         )
     }
@@ -275,12 +260,12 @@ function mapStateToProps(state) {
 
 const mapDispatchToState = dispatch => {
     return {
-        moveCard: card => dispatch(cardMoved(card)),
-        moveList: lists => dispatch(listMoved(lists)),
-        removeList: lists => dispatch(listRemoved(lists)),
-        addList: lists => dispatch(listAdded(lists)),
-        editList: lists => dispatch(listEditted(lists)),
-        addNewCardToList: cards => dispatch(cardAdded(cards))
+        moveCard: (card, listFrom, listTo) => dispatch(cardMoved(card, listFrom, listTo)),
+        moveList: (lists, listName) => dispatch(listMoved(lists, listName)),
+        removeList: (lists, listName) => dispatch(listRemoved(lists, listName)),
+        addList: (lists, listName) => dispatch(listAdded(lists, listName)),
+        editList: (lists, oldName, newName) => dispatch(listEditted(lists, oldName, newName)),
+        addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName))
     }
 }
 

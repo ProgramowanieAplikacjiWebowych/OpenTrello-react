@@ -1,67 +1,84 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, 
-    CARD_MOVED_ON_CARD, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
-    EDITTED_CARD_NAME, LIST_MOVED } from "../types";
+    CARD_MOVED_ON_LIST, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
+    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED } from "../types";
 
-export const cardMoved = data => ({
+export const cardMoved = (data, from, to) => ({
     type: CARD_MOVED,
-    card: data
+    card: data,
+    history: { event: 'Card ' + data.text + ' was moved from ' + from + ' to ' + to + '.', time: new Date(), user: 'User 1' }
 });
 
-export const listRemoved = data => ({
+export const listRemoved = (data, listName) => ({
     type: LIST_REMOVED,
-    lists: data
+    lists: data,
+    history: { event: 'List ' + listName + ' was removed.', time: new Date(), user: 'User 1' }
 });
 
-export const listAdded = data => ({
+export const listAdded = (data, listName) => ({
     type: LIST_ADDED,
-    lists: data
+    lists: data,
+    history: { event: 'List ' + listName + ' was added.', time: new Date(), user: 'User 1' }
 });
 
-export const listEditted = data => ({
+export const listEditted = (data, oldName, newName) => ({
     type: LIST_EDITTED,
-    lists: data
+    lists: data,
+    history: { event: 'List name was changed from ' + oldName + ' to: ' + newName, time: new Date(), user: 'User 1' }
 });
 
-export const cardAdded = data => ({
+export const cardAdded = (data, cardName, listName) => ({
     type: CARD_ADDED,
-    cards: data
+    cards: data,
+    history: { event: 'New card ' + cardName + ' was added to: ' + listName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const cardRemoved = data => ({
+export const cardRemoved = (data, cardName, listName) => ({
     type: CARD_REMOVED,
-    cards: data
+    cards: data,
+    history: { event: 'Card ' + cardName + ' was removed from ' + listName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const cardMovedOnList = data => ({
-    type: CARD_MOVED_ON_CARD,
-    cards: data
+export const cardMovedOnList = (data, cardName, listName) => ({
+    type: CARD_MOVED_ON_LIST,
+    cards: data,
+    history: { event: 'Card ' + cardName + ' was moved inside of ' + listName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const addedCommentToCard = data => ({
+export const addedCommentToCard = (data, comment, cardName) => ({
     type: ADDED_COMMENT_TO_CARD,
-    cards: data
+    cards: data,
+    history: { event: 'New comment: "' + comment + '" was added to ' + cardName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const removedCommentFromCard = data => ({
+export const removedCommentFromCard = (data, cardName) => ({
     type: REMOVED_COMMENT_FROM_CARD,
-    cards: data
+    cards: data,
+    history: { event: 'Comment was removed from card ' + cardName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const edittedComment = data => ({
+export const edittedComment = (data, cardName) => ({
     type: EDITTED_COMMENT,
-    cards: data
+    cards: data,
+    history: { event: 'Comment was editted on card ' + cardName + '.', time: new Date(), user: 'User 1' }
 });
 
-export const listMoved = data => ({
+export const listMoved = (data, listName) => ({
     type: LIST_MOVED,
-    lists: data
+    lists: data,
+    history: { event: 'List ' + listName + ' was moved.', time: new Date(), user: 'User 1' }
 });
 
-export const cardNameEditted = (cards, list) => {
-    console.log('cardNameEditted', cards, list);
+export const cardNameEditted = (cards, oldName, cardName) => {
+    console.log('cardNameEditted', cards);
     return ({
         type: EDITTED_CARD_NAME,
         cards,
-        list
+        history: { event: 'Card name was changed from ' + oldName + ' to ' + cardName + '.', time: new Date(), user: 'User 1' }
     });
 };
+
+export const cardDescriptionEditted = (data, cardName) => ({
+    type: CARD_DESCRIPTION_EDITTED,
+    cards: data,
+    history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
+});

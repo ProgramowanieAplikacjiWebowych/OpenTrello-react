@@ -40,8 +40,9 @@ class CardDetails extends React.Component {
             this.card.description = this.desc;
             this.props.editCardDescription(this.card);
         } else {
+            const oldName = this.card.text;
             this.card.text = e.target[0].value;
-            this.props.editCardName(this.card);
+            this.props.editCardName(this.card, oldName);
         }
         this.card = null;
         this.comment = null;

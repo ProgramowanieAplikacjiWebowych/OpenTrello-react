@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom'
 
 
-import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted } from '../../actions/board';
+import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted, cardDescriptionEditted } from '../../actions/board';
 import Card from './Card';
 import FormComponent from './Form';
 import CardDetails from './CardDetails';
@@ -26,7 +26,6 @@ class List extends React.Component {
         console.log('onDrop list', listId, card, e.target);
 
         if (listId !== card.listId) {
-
             card.listId = listId
             // return;
         }
@@ -47,14 +46,7 @@ class List extends React.Component {
         cards.splice(cardIndex, 0, ...movedElement);
         console.log('On drop list splice carda', cards);
 
-
-        // this.setState({ cards });
-        this.props.moveCard(cards);
-        // const a = cards.splice(index, 1, ...movedElement);
-        // const card = JSON.parse(e.dataTransfer.getData('card'));
-
-        // card.listId = list.listId
-        // this.props.moveCard(card);
+        this.props.moveCard(cards, movedElement[0].text, this.props.list.name); // przenosiny na tej samej liscie
     }
 
     onChange = e => {
@@ -71,10 +63,10 @@ class List extends React.Component {
             return item.id === id;
         });
 
-        cards.splice(index, 1);
+        const removedCard = cards.splice(index, 1);
 
         this.setState({ cards });
-        this.props.removeCard(cards);
+        this.props.removeCard(cards, removedCard[0].text, this.props.list.name);
     }
 
     openAddCommentPopup = (e, id) => {
@@ -99,14 +91,16 @@ class List extends React.Component {
             commentId = comments[comments.length - 1].id;
         }
 
-        comments.push({
+        const newComment = {
             id: commentId + 1,
             owner: 'User 1',
             text: this.state.data.name || t
-        });
+        };
+
+        comments.push(newComment);
 
         this.setState({ cards });
-        this.props.addCommentToCard(cards);
+        this.props.addCommentToCard(cards, newComment.text, cards[index].text, );
         if (!this.state.showCardDetails) {
             this.closePopup();
         };
@@ -126,7 +120,7 @@ class List extends React.Component {
         comments.splice(index, 1);
 
         this.setState({ cards });
-        this.props.removeCommentFromCard(cards);
+        this.props.removeCommentFromCard(cards, card.text);
     }
 
     editComment = (card, comment) => {
@@ -140,10 +134,23 @@ class List extends React.Component {
         comments[index] = comment;
 
         this.setState({ cards });
-        this.props.editComment(cards);
+        this.props.editComment(cards, card.text);
     }
 
-    editCardName = (card) => {
+    editCardName = (card, oldName) => {
+        const cards = [...this.props.cards];
+        
+        const index = cards.findIndex((item) => {
+            return item.id === card.id;
+        });
+
+        cards[index] = card;
+
+        this.setState({ cards });
+        this.props.editCardName(cards, oldName, card.text);
+    }
+
+    editCardDescription = (card) => {
         const cards = [...this.props.cards];
         
         const index = cards.findIndex((item) => {
@@ -153,11 +160,8 @@ class List extends React.Component {
         cards[index] = card;
 
         this.setState({ cards });
-        this.props.editCardName(cards);
-    }
-
-    editCardDescription = (card) => {
-        this.editCardName(card); // funkcje robią to samo
+        this.props.editCardDescription(cards, card.text);
+        // this.editCardName(card); // funkcje robią to samo
     }
 
     openCardDetails = (e, id) => {
@@ -245,17 +249,19 @@ List.propTypes = {
     moveCard: PropTypes.func,
     addCommentToCard: PropTypes.func,
     removeCommentFromCard: PropTypes.func,
-    editCardName: PropTypes.func
+    editCardName: PropTypes.func,
+    cardDescriptionEditted: PropTypes.func
 }
 
 const mapDispatchToState = dispatch => {
     return {
-        removeCard: cards => dispatch(cardRemoved(cards)),
-        moveCard: cards => dispatch(cardMovedOnList(cards)),
-        addCommentToCard: cards => dispatch(addedCommentToCard(cards)),
-        removeCommentFromCard: cards => dispatch(removedCommentFromCard(cards)),
-        editComment: cards => dispatch(edittedComment(cards)),
-        editCardName: (cards) => dispatch(cardNameEditted(cards)),
+        removeCard: (cards, cardName, listName) => dispatch(cardRemoved(cards, cardName, listName)),
+        moveCard: (cards, cardName, listName) => dispatch(cardMovedOnList(cards, cardName, listName)),
+        addCommentToCard: (cards, comment, cardName) => dispatch(addedCommentToCard(cards, comment, cardName)),
+        removeCommentFromCard: (cards, cardName) => dispatch(removedCommentFromCard(cards, cardName)),
+        editComment: (cards, cardName) => dispatch(edittedComment(cards, cardName)),
+        editCardName: (cards, oldName, cardName) => dispatch(cardNameEditted(cards, oldName, cardName)),
+        editCardDescription: (cards, cardName) => dispatch(cardDescriptionEditted(cards, cardName))
     }
 }
 

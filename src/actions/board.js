@@ -1,6 +1,6 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, 
     CARD_MOVED_ON_LIST, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
-    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED } from "../types";
+    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, CARD_MARKED, CARDS_REMOVED } from "../types";
 
 export const cardMoved = (data, from, to) => ({
     type: CARD_MOVED,
@@ -82,3 +82,19 @@ export const cardDescriptionEditted = (data, cardName) => ({
     cards: data,
     history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
 });
+
+export const cardMarked = (id, isSelected) => ({
+    type: CARD_MARKED,
+    id,
+    isSelected
+    // history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
+});
+
+export const cardsRemoved = (cards, markedCards, cardsNumber) => {
+    console.log(this, cards);
+    return ({
+    type: CARDS_REMOVED,
+    cards,
+    markedCards, 
+    history: { event: 'Removed ' + cardsNumber + ' card(s).', time: new Date(), user: 'User 1' }
+})};

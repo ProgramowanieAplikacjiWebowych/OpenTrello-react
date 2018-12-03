@@ -1,5 +1,6 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_LIST, 
-    ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED } from "../types";
+    ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, 
+    CARD_MARKED, CARDS_REMOVED } from "../types";
 
 const initialState = {
     // tmp 
@@ -53,7 +54,8 @@ const initialState = {
         }
     ],
     history: [
-    ]
+    ],
+    markedCards: []
 };
 
 function updateCards(state, card) {
@@ -61,6 +63,18 @@ function updateCards(state, card) {
     const updatedCardIndex = s.cards.findIndex(x => x.id === card.id)
     s.cards[updatedCardIndex] = card;
     return s.cards;
+}
+
+function updateMarkedCards (markedList, action) {
+    const old = markedList;
+    if (action.isSelected) {
+        old.push(action.id);
+    } else {
+        const index = old.findIndex(x => action.id === x);
+        old.splice(index, 1);
+    }
+
+    return old;
 }
 
 function updateHistory (array, historyItem) {
@@ -72,12 +86,12 @@ function updateHistory (array, historyItem) {
 export default function board(state = initialState, action = {}) {
     switch (action.type) {
         case CARD_MOVED:
-            return {
-                ...state,
-                cards: [...updateCards(state, action.card)],
-                history: updateHistory([...state.history], action.history)
+        return {
+            ...state,
+            cards: [...updateCards(state, action.card)],
+            history: updateHistory([...state.history], action.history)
             };
-        case LIST_REMOVED:
+            case LIST_REMOVED:
         case LIST_ADDED: 
         case LIST_EDITTED: 
         case LIST_MOVED:
@@ -93,17 +107,29 @@ export default function board(state = initialState, action = {}) {
         case REMOVED_COMMENT_FROM_CARD:
         case EDITTED_COMMENT:
         case CARD_DESCRIPTION_EDITTED:
-            console.log('@@@ reducer', action);
-            return {
-                ...state,
-                cards: action.cards,
-                history: updateHistory([...state.history], action.history)
-            }
+        console.log('@@@ reducer', action);
+        return {
+            ...state,
+            cards: action.cards,
+            history: updateHistory([...state.history], action.history)
+        }
         case EDITTED_CARD_NAME:
+        return {
+            ...state,
+            cards: action.cards,
+            lists: state.lists,
+            history: updateHistory([...state.history], action.history)
+        }
+        case CARD_MARKED: 
+            return {
+                ...state,
+                markedCards: updateMarkedCards([...state.markedCards], action)
+            }
+        case CARDS_REMOVED:
             return {
                 ...state,
                 cards: action.cards,
-                lists: state.lists,
+                markedCards: updateMarkedCards([...state.markedCards], action),
                 history: updateHistory([...state.history], action.history)
             }
         default:

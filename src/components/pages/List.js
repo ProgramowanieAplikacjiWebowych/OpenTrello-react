@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom'
 
 
-import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted, cardDescriptionEditted } from '../../actions/board';
+import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted, cardDescriptionEditted, cardMarked } from '../../actions/board';
 import Card from './Card';
 import FormComponent from './Form';
 import CardDetails from './CardDetails';
@@ -176,6 +176,13 @@ class List extends React.Component {
         this.setState({ showCardDetails: false, cardId: null });
     }
 
+    optionSelected = (e, a) => {
+        e.stopPropagation();
+
+        this.props.markCardAsSelected(a.id, e.target.checked);
+        console.log('Option selected', a, e.target.checked);
+    }
+
     render() {
         let popup = null;
         let cardDetails = null;
@@ -192,7 +199,9 @@ class List extends React.Component {
                 onDragOver={(e) => this.onDragOver(e)}
                 onDrop={(e) => this.onDrop(e, card.listId, card.id)}
                 onClick={(e) => this.openCardDetails(e, card.id)}
-                key={card.id}><Card card={card} />
+                key={card.id}>
+                <Card card={card} />
+                <input type="checkbox" name="checkbox" value="false" onClick={(e) => this.optionSelected(e, card)} />
                 <button onClick={(e) => this.deleteCard(e, card.id)}>X</button>
                 <button onClick={(e) => this.openAddCommentPopup(e, card.id)}>C</button>
             </div>
@@ -250,7 +259,8 @@ List.propTypes = {
     addCommentToCard: PropTypes.func,
     removeCommentFromCard: PropTypes.func,
     editCardName: PropTypes.func,
-    cardDescriptionEditted: PropTypes.func
+    cardDescriptionEditted: PropTypes.func,
+    markCardAsSelected: PropTypes.func
 }
 
 const mapDispatchToState = dispatch => {
@@ -261,7 +271,8 @@ const mapDispatchToState = dispatch => {
         removeCommentFromCard: (cards, cardName) => dispatch(removedCommentFromCard(cards, cardName)),
         editComment: (cards, cardName) => dispatch(edittedComment(cards, cardName)),
         editCardName: (cards, oldName, cardName) => dispatch(cardNameEditted(cards, oldName, cardName)),
-        editCardDescription: (cards, cardName) => dispatch(cardDescriptionEditted(cards, cardName))
+        editCardDescription: (cards, cardName) => dispatch(cardDescriptionEditted(cards, cardName)),
+        markCardAsSelected: (id, isSelected) => dispatch(cardMarked(id, isSelected))
     }
 }
 

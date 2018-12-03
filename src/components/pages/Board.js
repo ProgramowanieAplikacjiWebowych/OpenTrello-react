@@ -5,9 +5,11 @@ import { Form, Button, Grid, Segment, Image } from "semantic-ui-react";
 import InlineError from "../messages/InlineError";
 
 import List from './List';
-import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved } from '../../actions/board';
+import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved, cardsRemoved } from '../../actions/board';
 import FormComponent from './Form';
 import History from './History';
+import ListOptions from './ListOptions';
+import ListHeader from './ListHeader';
 
 class Board extends React.Component {
     state = {
@@ -183,7 +185,20 @@ class Board extends React.Component {
         
         this.closeCreateNewListPopup();
     }
-  
+
+    deleteAllMarkedCards = () => {
+        const markedCards = this.props.markedCards;
+        const cards = this.props.cards;
+
+        const remainingCards = cards.filter(item =>
+            !markedCards.includes(item.id)
+        );
+
+        const cardsNumber = cards.length - remainingCards.length;
+        markedCards.length = 0; //reset marked cards
+
+        this.props.deleteAllMarkedCards(remainingCards, markedCards, cardsNumber);
+    }
 
     render() {
         let popup = null;
@@ -198,25 +213,17 @@ class Board extends React.Component {
         const lists = this.props.lists;
         const listsList = lists.map((list) => {
             return (
-                <div style={{ width: '30%', border: '1px solid pink' }}
-                    onDragOver={(e) => this.onDragOver(e)}
-                    onDrop={(e) => this.onDrop(e, list)}
-                    key={list.listId}
-                >
-                    <div style={{
-                            textAlign: "center",
-                            borderBottom: "1px solid pink",
-                            background: "aliceblue",
-                            height: "34px"
-                        }}
-                        draggable
-                        onDragStart={(e) => this.onDragStart(e, list)}>
-                        {list.name}
-                        <button onClick={(e) => this.deleteList(e, list)}>X</button>
-                        <button onClick={(e) => this.editList(e, list)}>E</button>
-                        <button onClick={(e) => this.addCardToList(e, list)}>A</button>
-                    </div>
-
+                <div style={{ width: '30%', border: '1px solid pink' }}>
+                    <ListHeader                         
+                        list={list}
+                        // listOptionsVisible={this.state.listOptionsVisible}
+                        onDragStart={this.onDragStart}
+                        onDragOver={this.onDragOver}
+                        onDrop={this.onDrop}
+                        deleteList={this.deleteList}
+                        editList={this.editList}
+                        addCardToList={this.addCardToList}
+                    />
                     <List cards={this.props.cards} list={list} />
                 </div>
             );
@@ -225,6 +232,8 @@ class Board extends React.Component {
         return (
             <div>
                 <button onClick={this.openCreateNewListPopup}>Create New List</button>
+                {this.props.markedCards.length ?
+                    <button onClick={(e) => this.deleteAllMarkedCards(e)}>Delete marked cards</button> : null}
                 {popup}
                 <div style={{
                         display: 'inline-flex',
@@ -247,14 +256,16 @@ Board.propTypes = {
     addList: PropTypes.func,
     addNewCardToList: PropTypes.func,
     lists: PropTypes.array,
-    cards: PropTypes.array
+    cards: PropTypes.array,
+    markedCards: PropTypes.array
 }
 
 function mapStateToProps(state) {
     console.log('board mapStateToProps', state);
     return {
         cards: state.board.cards,
-        lists: state.board.lists
+        lists: state.board.lists,
+        markedCards: state.board.markedCards
     };
 }
 
@@ -265,7 +276,8 @@ const mapDispatchToState = dispatch => {
         removeList: (lists, listName) => dispatch(listRemoved(lists, listName)),
         addList: (lists, listName) => dispatch(listAdded(lists, listName)),
         editList: (lists, oldName, newName) => dispatch(listEditted(lists, oldName, newName)),
-        addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName))
+        addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName)),
+        deleteAllMarkedCards: (cards, markedCards, cardsNumber) => dispatch(cardsRemoved(cards, markedCards, cardsNumber))
     }
 }
 

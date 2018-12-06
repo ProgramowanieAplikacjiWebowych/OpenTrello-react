@@ -1,6 +1,6 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_LIST, 
     ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, 
-    CARD_MARKED, CARDS_REMOVED } from "../types";
+    CARD_MARKED, CARDS_REMOVED, CARD_COPIED, CARD_RESTORED } from "../types";
 
 const initialState = {
     // tmp 
@@ -96,6 +96,8 @@ export default function board(state = initialState, action = {}) {
         case REMOVED_COMMENT_FROM_CARD:
         case EDITTED_COMMENT:
         case CARD_DESCRIPTION_EDITTED:
+        case CARD_COPIED:
+        case CARD_RESTORED:
         console.log('@@@ reducer', action);
             return {
                 ...state,

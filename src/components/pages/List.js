@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom'
 
 
-import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted, cardDescriptionEditted, cardMarked } from '../../actions/board';
+import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCard, edittedComment, cardNameEditted, 
+    cardDescriptionEditted, cardMarked, cardCopied } from '../../actions/board';
 import Card from './Card';
 import FormComponent from './Form';
 import CardDetails from './CardDetails';
@@ -56,17 +57,13 @@ class List extends React.Component {
         });
     }
 
-    deleteCard = (e, id) => {
+    deleteCard = (e, card) => {
         e.stopPropagation();
-        const cards = [...this.props.cards];
-        const index = cards.findIndex((item) => {
-            return item.id === id;
-        });
+       
+        const archivedCard = card; // a tu nie ma {} bo chcemy zmodyfikowac te karte z listy \ js /
+        archivedCard.archived = true;
 
-        const removedCard = cards.splice(index, 1);
-
-        this.setState({ cards });
-        this.props.removeCard(cards, removedCard[0].text, this.props.list.name);
+        this.props.removeCard([...this.props.cards], archivedCard.text, this.props.list.name);
     }
 
     openAddCommentPopup = (e, id) => {
@@ -186,6 +183,18 @@ class List extends React.Component {
         console.log('Option selected', card, e.target.checked);
     }
 
+    copyCard = (e, card) => {
+        e.stopPropagation();
+        const cards = [...this.props.cards];
+        const lastCard = cards[cards.length - 1];
+        const newCard = {...card}; // jak sie zrobi bez spread to modyfikuje tez kopiowana karte. \ js /
+        newCard.id = lastCard ? lastCard.id + 1 : 0
+
+        cards.push(newCard)
+
+        this.props.copyCard(cards, newCard.text);
+    }
+
     render() {
         let popup = null;
         let cardDetails = null;
@@ -196,7 +205,7 @@ class List extends React.Component {
             }
         });
 
-        cards = cardList.map((card) =>
+        cards = cardList.map((card) => !card.archived ?
             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <div className="list-group-item"
                 onDragOver={(e) => this.onDragOver(e)}
@@ -205,9 +214,10 @@ class List extends React.Component {
                 key={card.id}>
                 <Card card={card} />
                 <input type="checkbox" name="checkbox" value="false" onClick={(e) => this.optionSelected(e, card)} />
-                <button onClick={(e) => this.deleteCard(e, card.id)}>X</button>
-                <button onClick={(e) => this.openAddCommentPopup(e, card.id)}>C</button>
-            </div>
+                <button onClick={(e) => this.deleteCard(e, card)}>Delete card</button>
+                <button onClick={(e) => this.openAddCommentPopup(e, card.id)}>Add comment</button>
+                <button onClick={(e) => this.copyCard(e, card)}>Copy card</button>
+            </div> : null
         );
 
         if (this.state.showCommentPopup) {
@@ -263,7 +273,8 @@ List.propTypes = {
     removeCommentFromCard: PropTypes.func,
     editCardName: PropTypes.func,
     cardDescriptionEditted: PropTypes.func,
-    markCardAsSelected: PropTypes.func
+    markCardAsSelected: PropTypes.func,
+    copyCard: PropTypes.func
 }
 
 const mapDispatchToState = dispatch => {
@@ -275,7 +286,8 @@ const mapDispatchToState = dispatch => {
         editComment: (cards, cardName) => dispatch(edittedComment(cards, cardName)),
         editCardName: (cards, oldName, cardName) => dispatch(cardNameEditted(cards, oldName, cardName)),
         editCardDescription: (cards, cardName) => dispatch(cardDescriptionEditted(cards, cardName)),
-        markCardAsSelected: (cards) => dispatch(cardMarked(cards))
+        markCardAsSelected: (cards) => dispatch(cardMarked(cards)),
+        copyCard: (cards, cardName) => dispatch(cardCopied(cards, cardName))
     }
 }
 

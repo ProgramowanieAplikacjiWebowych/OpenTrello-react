@@ -1,6 +1,6 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, 
     CARD_MOVED_ON_LIST, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
-    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, CARD_MARKED, CARDS_REMOVED } from "../types";
+    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, CARD_MARKED, CARDS_REMOVED, CARD_COPIED, CARD_RESTORED } from "../types";
 
 export const cardMoved = (data, from, to) => ({
     type: CARD_MOVED,
@@ -97,3 +97,15 @@ export const cardsRemoved = (cards, cardsNumber) => {
     cards,
     history: { event: 'Removed ' + cardsNumber + ' card(s).', time: new Date(), user: 'User 1' }
 })};
+
+export const cardCopied = (cards, cardName) => ({
+        type: CARD_COPIED,
+        cards,
+        history: { event: cardName + ' duplicated.', time: new Date(), user: 'User 1' }
+});
+
+export const cardRestored = (cards, cardName) => ({
+        type: CARD_RESTORED,
+        cards,
+        history: { event: cardName + ' restored.', time: new Date(), user: 'User 1' }
+});

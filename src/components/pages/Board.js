@@ -5,7 +5,7 @@ import { Form, Button, Grid, Segment, Image } from "semantic-ui-react";
 import InlineError from "../messages/InlineError";
 
 import List from './List';
-import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved, cardsRemoved } from '../../actions/board';
+import { cardMoved, listRemoved, listAdded, listEditted, cardAdded, listMoved, cardsRemoved, cardRestored } from '../../actions/board';
 import FormComponent from './Form';
 import History from './History';
 import ListOptions from './ListOptions';
@@ -18,7 +18,8 @@ class Board extends React.Component {
         data: {},
         createNewListPopupVisible: false,
         editListPopupVisible: false,
-        newCardPopupVisible: false
+        newCardPopupVisible: false,
+        showArchived: false
     }
 
     componentWillReceiveProps(props) {
@@ -198,6 +199,13 @@ class Board extends React.Component {
         console.log('@@@ deleteAllMarkedCards', cards);
     }
 
+    restoreCard = (e, card) => {
+        const cardToRestore = card;
+        cardToRestore.archived = false;
+
+        this.props.restoreCard([...this.props.cards], card.text);
+    }
+
     isAnyCardMarked = () => {
         const cards = this.props.cards;
 
@@ -217,6 +225,7 @@ class Board extends React.Component {
 
         console.log('Boards', this.props.cards, this.props.lists);
         const lists = this.props.lists;
+        const cards = this.props.cards;
         const listsList = lists.map((list) => {
             return (
                 <div style={{ width: '30%', border: '1px solid pink' }}>
@@ -233,13 +242,33 @@ class Board extends React.Component {
                 </div>
             );
         });
+        let archivedCards = cards.filter(card => card.archived).map(card => 
+            <div>{card.text}
+                <button style={{ position: "absolute", right: "10px" }} onClick={(e) => this.restoreCard(e, card)}>Przywróc</button>
+                <hr/>
+            </div>);
+        if (!archivedCards.length) {
+            archivedCards = <div>Brak zarchiwizowanych kart.</div>
+        }
 
         return (
             <div>
                 <button onClick={this.openCreateNewListPopup}>Create New List</button>
+                <button onClick={() => this.setState({ showArchived: !this.state.showArchived })}>Pokaz zarchiwizowane karty</button>
                 {this.isAnyCardMarked() ?
                     <button onClick={(e) => this.deleteAllMarkedCards(e)}>Delete marked cards</button> : null}
                 {popup}
+                {this.state.showArchived ? 
+                    <div style={{
+                            border: "1px solid black",
+                            position: "fixed",
+                            zIndex: 3,
+                            width: "300px",
+                            background: "antiquewhite",
+                            padding: "30px 10px 10px"
+                        }}>
+                    {archivedCards}
+                    </div> : null}
                 <div style={{
                         display: 'inline-flex',
                         width: '90%'
@@ -260,6 +289,7 @@ Board.propTypes = {
     editList: PropTypes.func,
     addList: PropTypes.func,
     addNewCardToList: PropTypes.func,
+    restoreCard: PropTypes.func,
     lists: PropTypes.array,
     cards: PropTypes.array
 }
@@ -280,7 +310,8 @@ const mapDispatchToState = dispatch => {
         addList: (lists, listName) => dispatch(listAdded(lists, listName)),
         editList: (lists, oldName, newName) => dispatch(listEditted(lists, oldName, newName)),
         addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName)),
-        deleteAllMarkedCards: (cards, cardsNumber) => dispatch(cardsRemoved(cards, cardsNumber))
+        deleteAllMarkedCards: (cards, cardsNumber) => dispatch(cardsRemoved(cards, cardsNumber)),
+        restoreCard: (cards, cardName) => dispatch(cardRestored(cards, cardName))
     }
 }
 

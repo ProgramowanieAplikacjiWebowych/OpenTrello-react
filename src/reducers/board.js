@@ -16,7 +16,8 @@ const initialState = {
                     text: 'Jakiś komentarz'
                 }
             ],
-            description: 'Trzeba naprawić coś... Tylko co?'
+            description: 'Trzeba naprawić coś... Tylko co?',
+            marked: false
         },
         {
             id: 1,
@@ -29,14 +30,16 @@ const initialState = {
                     text: 'Siema!'
                 }
             ],
-            description: 'Opis musi być'
+            description: 'Opis musi być',
+            marked: false
         }, 
         {
             id: 2,
             text: 'Card 3',
             listId: 0,
             comments: [],
-            description: 'Opis musi mieć ileśtam znaków'
+            description: 'Opis musi mieć ileśtam znaków',
+            marked: false
         }
     ],
     lists: [
@@ -54,8 +57,7 @@ const initialState = {
         }
     ],
     history: [
-    ],
-    markedCards: []
+    ]
 };
 
 function updateCards(state, card) {
@@ -63,18 +65,6 @@ function updateCards(state, card) {
     const updatedCardIndex = s.cards.findIndex(x => x.id === card.id)
     s.cards[updatedCardIndex] = card;
     return s.cards;
-}
-
-function updateMarkedCards (markedList, action) {
-    const old = markedList;
-    if (action.isSelected) {
-        old.push(action.id);
-    } else {
-        const index = old.findIndex(x => action.id === x);
-        old.splice(index, 1);
-    }
-
-    return old;
 }
 
 function updateHistory (array, historyItem) {
@@ -86,12 +76,11 @@ function updateHistory (array, historyItem) {
 export default function board(state = initialState, action = {}) {
     switch (action.type) {
         case CARD_MOVED:
-        return {
-            ...state,
-            cards: [...updateCards(state, action.card)],
-            history: updateHistory([...state.history], action.history)
+            return {
+                ...state,
+                cards: [...updateCards(state, action.card)],
+                history: updateHistory([...state.history], action.history)
             };
-            case LIST_REMOVED:
         case LIST_ADDED: 
         case LIST_EDITTED: 
         case LIST_MOVED:
@@ -108,28 +97,28 @@ export default function board(state = initialState, action = {}) {
         case EDITTED_COMMENT:
         case CARD_DESCRIPTION_EDITTED:
         console.log('@@@ reducer', action);
-        return {
-            ...state,
-            cards: action.cards,
-            history: updateHistory([...state.history], action.history)
-        }
+            return {
+                ...state,
+                cards: action.cards,
+                history: updateHistory([...state.history], action.history)
+            }
         case EDITTED_CARD_NAME:
-        return {
-            ...state,
-            cards: action.cards,
-            lists: state.lists,
-            history: updateHistory([...state.history], action.history)
-        }
+        case LIST_REMOVED:
+            return {
+                ...state,
+                cards: action.cards,
+                lists: action.lists,
+                history: updateHistory([...state.history], action.history)
+            }
         case CARD_MARKED: 
             return {
                 ...state,
-                markedCards: updateMarkedCards([...state.markedCards], action)
+                cards: [...action.cards]
             }
         case CARDS_REMOVED:
             return {
                 ...state,
                 cards: action.cards,
-                markedCards: updateMarkedCards([...state.markedCards], action),
                 history: updateHistory([...state.history], action.history)
             }
         default:

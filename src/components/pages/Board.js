@@ -21,6 +21,10 @@ class Board extends React.Component {
         newCardPopupVisible: false
     }
 
+    componentWillReceiveProps(props) {
+        console.log('@@ props', props);
+    }
+
     onDragOver = (e) => {
         e.preventDefault();
     }
@@ -147,15 +151,14 @@ class Board extends React.Component {
 
     deleteList = (e, list) => {
         const lists = [...this.props.lists];
-        const index = lists.findIndex((item) => {
-            return item.listId === list.listId;
-        });
-        const listName = lists[index].name; // needed to proper display history
+        const cards = [...this.props.cards];
+        const index = lists.findIndex((item) => item.listId === list.listId);
+        const listToDelete = lists[index]; // needed to proper display history
+        const remainingCards = cards.filter(item => item.listId !== listToDelete.listId); // remove cards from this list too
 
         lists.splice(index, 1);
 
-        this.setState({ lists });
-        this.props.removeList(lists, listName);
+        this.props.removeList(lists, remainingCards, listToDelete.name);
     }
 
     editList = (e, list) => {
@@ -187,17 +190,20 @@ class Board extends React.Component {
     }
 
     deleteAllMarkedCards = () => {
-        const markedCards = this.props.markedCards;
+        const cards = this.props.cards;
+        const remainingCards = cards.filter(item => !item.marked);
+        const cardsNumber = cards.length - remainingCards.length;
+        
+        this.props.deleteAllMarkedCards(remainingCards, cardsNumber);
+        console.log('@@@ deleteAllMarkedCards', cards);
+    }
+
+    isAnyCardMarked = () => {
         const cards = this.props.cards;
 
-        const remainingCards = cards.filter(item =>
-            !markedCards.includes(item.id)
-        );
+        const markedCards = cards.filter(item => item.marked);
 
-        const cardsNumber = cards.length - remainingCards.length;
-        markedCards.length = 0; //reset marked cards
-
-        this.props.deleteAllMarkedCards(remainingCards, markedCards, cardsNumber);
+        return !!markedCards.length;
     }
 
     render() {
@@ -216,7 +222,6 @@ class Board extends React.Component {
                 <div style={{ width: '30%', border: '1px solid pink' }}>
                     <ListHeader                         
                         list={list}
-                        // listOptionsVisible={this.state.listOptionsVisible}
                         onDragStart={this.onDragStart}
                         onDragOver={this.onDragOver}
                         onDrop={this.onDrop}
@@ -232,7 +237,7 @@ class Board extends React.Component {
         return (
             <div>
                 <button onClick={this.openCreateNewListPopup}>Create New List</button>
-                {this.props.markedCards.length ?
+                {this.isAnyCardMarked() ?
                     <button onClick={(e) => this.deleteAllMarkedCards(e)}>Delete marked cards</button> : null}
                 {popup}
                 <div style={{
@@ -256,16 +261,14 @@ Board.propTypes = {
     addList: PropTypes.func,
     addNewCardToList: PropTypes.func,
     lists: PropTypes.array,
-    cards: PropTypes.array,
-    markedCards: PropTypes.array
+    cards: PropTypes.array
 }
 
 function mapStateToProps(state) {
     console.log('board mapStateToProps', state);
     return {
         cards: state.board.cards,
-        lists: state.board.lists,
-        markedCards: state.board.markedCards
+        lists: state.board.lists
     };
 }
 
@@ -273,11 +276,11 @@ const mapDispatchToState = dispatch => {
     return {
         moveCard: (card, listFrom, listTo) => dispatch(cardMoved(card, listFrom, listTo)),
         moveList: (lists, listName) => dispatch(listMoved(lists, listName)),
-        removeList: (lists, listName) => dispatch(listRemoved(lists, listName)),
+        removeList: (lists, cards, listName) => dispatch(listRemoved(lists, cards, listName)),
         addList: (lists, listName) => dispatch(listAdded(lists, listName)),
         editList: (lists, oldName, newName) => dispatch(listEditted(lists, oldName, newName)),
         addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName)),
-        deleteAllMarkedCards: (cards, markedCards, cardsNumber) => dispatch(cardsRemoved(cards, markedCards, cardsNumber))
+        deleteAllMarkedCards: (cards, cardsNumber) => dispatch(cardsRemoved(cards, cardsNumber))
     }
 }
 

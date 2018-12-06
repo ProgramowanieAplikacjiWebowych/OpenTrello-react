@@ -8,9 +8,10 @@ export const cardMoved = (data, from, to) => ({
     history: { event: 'Card ' + data.text + ' was moved from ' + from + ' to ' + to + '.', time: new Date(), user: 'User 1' }
 });
 
-export const listRemoved = (data, listName) => ({
+export const listRemoved = (lists, cards, listName) => ({
     type: LIST_REMOVED,
-    lists: data,
+    lists,
+    cards,
     history: { event: 'List ' + listName + ' was removed.', time: new Date(), user: 'User 1' }
 });
 
@@ -83,18 +84,16 @@ export const cardDescriptionEditted = (data, cardName) => ({
     history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
 });
 
-export const cardMarked = (id, isSelected) => ({
+export const cardMarked = (cards) => ({
     type: CARD_MARKED,
-    id,
-    isSelected
+    cards
     // history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
 });
 
-export const cardsRemoved = (cards, markedCards, cardsNumber) => {
+export const cardsRemoved = (cards, cardsNumber) => {
     console.log(this, cards);
     return ({
     type: CARDS_REMOVED,
     cards,
-    markedCards, 
     history: { event: 'Removed ' + cardsNumber + ' card(s).', time: new Date(), user: 'User 1' }
 })};

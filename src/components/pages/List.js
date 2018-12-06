@@ -176,11 +176,14 @@ class List extends React.Component {
         this.setState({ showCardDetails: false, cardId: null });
     }
 
-    optionSelected = (e, a) => {
+    optionSelected = (e, card) => {
         e.stopPropagation();
+        const cards = this.props.cards;
+        const index = cards.findIndex(item => item === card);
+        cards[index].marked = e.target.checked;
 
-        this.props.markCardAsSelected(a.id, e.target.checked);
-        console.log('Option selected', a, e.target.checked);
+        this.props.markCardAsSelected(cards);
+        console.log('Option selected', card, e.target.checked);
     }
 
     render() {
@@ -272,7 +275,7 @@ const mapDispatchToState = dispatch => {
         editComment: (cards, cardName) => dispatch(edittedComment(cards, cardName)),
         editCardName: (cards, oldName, cardName) => dispatch(cardNameEditted(cards, oldName, cardName)),
         editCardDescription: (cards, cardName) => dispatch(cardDescriptionEditted(cards, cardName)),
-        markCardAsSelected: (id, isSelected) => dispatch(cardMarked(id, isSelected))
+        markCardAsSelected: (cards) => dispatch(cardMarked(cards))
     }
 }
 

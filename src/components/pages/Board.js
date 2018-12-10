@@ -195,13 +195,20 @@ class Board extends React.Component {
         const remainingCards = cards.filter(item => !item.marked);
         const cardsNumber = cards.length - remainingCards.length;
         
-        this.props.deleteAllMarkedCards(remainingCards, cardsNumber);
-        console.log('@@@ deleteAllMarkedCards', cards);
+        cards.filter(item => {
+            const i = item;
+            i.archived = item.marked;
+            return i.marked;
+        });
+
+
+        this.props.deleteAllMarkedCards(this.props.lists, cards, cardsNumber);
     }
 
     restoreCard = (e, card) => {
         const cardToRestore = card;
         cardToRestore.archived = false;
+        cardToRestore.marked = false;
 
         this.props.restoreCard([...this.props.cards], card.text);
     }
@@ -209,7 +216,7 @@ class Board extends React.Component {
     isAnyCardMarked = () => {
         const cards = this.props.cards;
 
-        const markedCards = cards.filter(item => item.marked);
+        const markedCards = cards.filter(item => item.marked && !item.archived);
 
         return !!markedCards.length;
     }
@@ -238,7 +245,7 @@ class Board extends React.Component {
                         editList={this.editList}
                         addCardToList={this.addCardToList}
                     />
-                    <List cards={this.props.cards} list={list} />
+                    <List cards={cards} list={list} />
                 </div>
             );
         });
@@ -310,7 +317,7 @@ const mapDispatchToState = dispatch => {
         addList: (lists, listName) => dispatch(listAdded(lists, listName)),
         editList: (lists, oldName, newName) => dispatch(listEditted(lists, oldName, newName)),
         addNewCardToList: (cards, cardName, listName) => dispatch(cardAdded(cards, cardName, listName)),
-        deleteAllMarkedCards: (cards, cardsNumber) => dispatch(cardsRemoved(cards, cardsNumber)),
+        deleteAllMarkedCards: (lists, cards, cardsNumber) => dispatch(cardsRemoved(lists, cards, cardsNumber)),
         restoreCard: (cards, cardName) => dispatch(cardRestored(cards, cardName))
     }
 }

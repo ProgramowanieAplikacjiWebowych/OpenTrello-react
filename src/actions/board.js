@@ -90,11 +90,12 @@ export const cardMarked = (cards) => ({
     // history: { event: 'Description of ' + cardName + ' was editted.', time: new Date(), user: 'User 1' }
 });
 
-export const cardsRemoved = (cards, cardsNumber) => {
+export const cardsRemoved = (lists, cards, cardsNumber) => {
     console.log(this, cards);
     return ({
     type: CARDS_REMOVED,
-    cards,
+    cards: [...cards],
+    lists,
     history: { event: 'Removed ' + cardsNumber + ' card(s).', time: new Date(), user: 'User 1' }
 })};
 

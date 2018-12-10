@@ -9,12 +9,17 @@ import { cardRemoved, cardMovedOnList, addedCommentToCard, removedCommentFromCar
 import Card from './Card';
 import FormComponent from './Form';
 import CardDetails from './CardDetails';
+import ListOptions from './ListOptions';
 
 class List extends React.Component {
 
     state = {
         errors: {},
         data: { name: '' }
+    }
+
+    componentWillReceiveProps (props) {
+        console.log('List com props', props);
     }
 
     onDragOver = (e) => {
@@ -208,15 +213,27 @@ class List extends React.Component {
         cards = cardList.map((card) => !card.archived ?
             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <div className="list-group-item"
+                style={{ 
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "5px"
+                    }}
                 onDragOver={(e) => this.onDragOver(e)}
                 onDrop={(e) => this.onDrop(e, card.listId, card.id)}
                 onClick={(e) => this.openCardDetails(e, card.id)}
                 key={card.id}>
+                <input style={{ margin: "0 5px" }} type="checkbox" name="checkbox" value="false" onClick={(e) => this.optionSelected(e, card)} />
                 <Card card={card} />
-                <input type="checkbox" name="checkbox" value="false" onClick={(e) => this.optionSelected(e, card)} />
-                <button onClick={(e) => this.deleteCard(e, card)}>Delete card</button>
+                <ListOptions
+                    list={card}
+                    options={{ 
+                        "Delete card": (e) => this.deleteCard(e, card),
+                        "Add comment": (e) => this.openAddCommentPopup(e, card.id),
+                        "Copy card": (e) => this.copyCard(e, card)
+                    }} />
+                {/* <button onClick={(e) => this.deleteCard(e, card)}>Delete card</button>
                 <button onClick={(e) => this.openAddCommentPopup(e, card.id)}>Add comment</button>
-                <button onClick={(e) => this.copyCard(e, card)}>Copy card</button>
+                <button onClick={(e) => this.copyCard(e, card)}>Copy card</button> */}
             </div> : null
         );
 

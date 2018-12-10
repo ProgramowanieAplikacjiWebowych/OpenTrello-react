@@ -1,4 +1,5 @@
 import React from 'react';
+import ListOption from './ListOption';
 
 class ListOptions extends React.Component {
     state = {
@@ -7,17 +8,27 @@ class ListOptions extends React.Component {
 
     switchListOptions = (e, value) => {
         this.setState({ listOptionsVisible: value });
-        console.log('listHeader switchListOptions', this.state);
+        console.log('listHeader switchListOptions', this.state, value);
     }
 
     render () {
-        console.log('ListOption', this.props);
+        const options = [];
+        Object.entries(this.props.options).forEach(([key, value]) => {
+            options.push(<ListOption key={key} action={(e) => value(e, this.props.list)} optionText={key} />);
+        });
+        const style = {
+            width: "30px",
+            backgroundColor: "lightgrey",
+            margin: "6px 5px",
+            height: "2px"
+        };
+
         return (
             <div onMouseLeave={(e) => this.switchListOptions(e, false)}>
-                <div style={{ width: "30px", margin: "auto 5px" }} onMouseEnter={(e) => this.switchListOptions(e, true)}>
-                    <hr />
-                    <hr />
-                    <hr />
+                <div onMouseEnter={(e) => this.switchListOptions(e, true)}>
+                    <div style={style}/>
+                    <div style={style}/>
+                    <div style={style}/>
                 </div>
                 {this.state.listOptionsVisible ? 
                     <div style={{ 
@@ -25,12 +36,7 @@ class ListOptions extends React.Component {
                             zIndex: 3,
                             border: "1px solid brown"
                         }}>
-                        <button style={{ display: "block", width: "100%", webkitAppearance: "button-bevel" }} 
-                            onClick={(e) => this.props.deleteList(e, this.props.list)}>Delete list</button>
-                        <button style={{ display: "block", width: "100%", webkitAppearance: "button-bevel" }} 
-                            onClick={(e) => this.props.editList(e, this.props.list)}>Edit list</button>
-                        <button style={{ display: "block", width: "100%", webkitAppearance: "button-bevel" }} 
-                            onClick={(e) => this.props.addCardToList(e, this.props.list)}>Add new card</button>
+                        {options}
                     </div> : null}
             </div>
         );

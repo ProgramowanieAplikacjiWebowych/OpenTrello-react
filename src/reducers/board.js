@@ -98,13 +98,14 @@ export default function board(state = initialState, action = {}) {
         case CARD_DESCRIPTION_EDITTED:
         case CARD_COPIED:
         case CARD_RESTORED:
+        case EDITTED_CARD_NAME:
         console.log('@@@ reducer', action);
             return {
                 ...state,
                 cards: action.cards,
                 history: updateHistory([...state.history], action.history)
             }
-        case EDITTED_CARD_NAME:
+        case CARDS_REMOVED:
         case LIST_REMOVED:
             return {
                 ...state,
@@ -116,12 +117,6 @@ export default function board(state = initialState, action = {}) {
             return {
                 ...state,
                 cards: [...action.cards]
-            }
-        case CARDS_REMOVED:
-            return {
-                ...state,
-                cards: action.cards,
-                history: updateHistory([...state.history], action.history)
             }
         default:
             return state;

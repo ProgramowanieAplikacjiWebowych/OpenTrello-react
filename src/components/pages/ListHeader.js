@@ -8,18 +8,18 @@ const listHeader = (props) =>
         onDrop={(e) => props.onDrop(e, props.list)}
         key={props.list.listId}>
         <div style={{
-            width: "100%",
-            display: "flex",
-            background: "aliceblue",
-            borderBottom: "1px solid pink",
-            lineHeight: "2em",
-            position: "relative"
-        }}>
+                width: "100%",
+                display: "flex",
+                background: "aliceblue",
+                borderBottom: "1px solid pink",
+                lineHeight: "2em",
+                position: "relative"
+            }}>
             <div style={{
-                textAlign: "center",
-                height: "34px",
-                width: "calc(100% - 30px)"
-            }}
+                    textAlign: "center",
+                    height: "34px",
+                    width: "calc(100% - 30px)"
+                }}
                 draggable
                 onDragStart={(e) => props.onDragStart(e, props.list)}>
                 {props.list.name}
@@ -27,9 +27,11 @@ const listHeader = (props) =>
 
             <ListOptions
                 list={props.list}
-                deleteList={props.deleteList}
-                editList={props.editList}
-                addCardToList={props.addCardToList} />
+                options={{ 
+                    "Delete list": props.deleteList,
+                    "Edit list": props.editList,
+                    "Add card to list": props.addCardToList
+                }} />
         </div>
     </div>
 

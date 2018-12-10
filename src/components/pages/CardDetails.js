@@ -106,8 +106,8 @@ class CardDetails extends React.Component {
                     }}>
                     <span><strong>{this.props.card.text}</strong></span>
                     <div>{this.props.card.description}</div>
-                    <button onClick={(e) => this.editCardName(e)}>en</button>
-                    <button onClick={(e) => this.editCardDescription(e)}>ed</button>
+                    <button onClick={(e) => this.editCardName(e)}>Edit card name</button>
+                    <button onClick={(e) => this.editCardDescription(e)}>Edit card description</button>
                     <hr />
                     Card ID: {this.props.card.id}<br />
                     List ID: {this.props.card.listId}<br />

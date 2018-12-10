@@ -23,7 +23,13 @@ class Card extends React.Component {
         return (
             <div draggable 
                 onDragStart={(e) => this.onDragStart(e, this.props.card)} 
-                style={{ border: '1px solid black' }}>
+                style={{ border: '1px solid black',
+                        display: "inline-block",
+                        width: "100%",
+                        height: "40px",
+                        textAlign: "WebkitCenter",
+                        lineHeight: "2.5em"
+                    }}>
 
                 {this.props.card.text}
             </div>

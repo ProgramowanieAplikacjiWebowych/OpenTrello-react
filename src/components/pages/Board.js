@@ -125,8 +125,10 @@ class Board extends React.Component {
 
         const newList = {
             name: this.state.data.name,
-            listId: listItem ? listItem.listId + 1 : 0
-        }
+            listId: listItem ? listItem.listId + 1 : 0,
+            boardId: this.props.board.id
+        };
+
         newLists.push(newList)
 
         this.setState({ lists: newLists });
@@ -230,12 +232,12 @@ class Board extends React.Component {
             );
         }
 
-        console.log('Boards', this.props.cards, this.props.lists);
+        console.log('Board', this.props, this.props.lists);
         const lists = this.props.lists;
         const cards = this.props.cards;
-        const listsList = lists.map((list) => {
+        const listsList = lists.filter(item => item.boardId === this.props.board.id).map((list) => {
             return (
-                <div style={{ width: '30%', border: '1px solid pink' }}>
+                <div key={list.listId} style={{ width: '30%', border: '1px solid pink' }}>
                     <ListHeader                         
                         list={list}
                         onDragStart={this.onDragStart}

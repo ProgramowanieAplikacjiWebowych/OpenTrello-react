@@ -8,7 +8,7 @@ import { login } from "../../actions/auth";
 class LoginPage extends React.Component {
   submit = data =>
     this.props.login(data)
-      .then(() => this.props.history.push("/board"))
+      .then(() => this.props.history.push("/boards"))
       .catch((err) => console.log(err));
 
   render() {

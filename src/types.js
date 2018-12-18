@@ -21,3 +21,5 @@ export const CARD_MARKED = "CARD_MARKED";
 export const CARDS_REMOVED = "CARDS_REMOVED";
 export const CARD_COPIED = "CARD_COPIED";
 export const CARD_RESTORED = "CARD_RESTORED";
+
+export const BOARD_ADDED = "BOARD_ADDED";

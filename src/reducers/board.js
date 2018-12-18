@@ -1,6 +1,6 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, CARD_MOVED_ON_LIST, 
     ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, 
-    CARD_MARKED, CARDS_REMOVED, CARD_COPIED, CARD_RESTORED } from "../types";
+    CARD_MARKED, CARDS_REMOVED, CARD_COPIED, CARD_RESTORED, BOARD_ADDED } from "../types";
 
 const initialState = {
     // tmp 
@@ -45,18 +45,37 @@ const initialState = {
     lists: [
         {
             listId: 0,
+            boardId: 0,
             name: 'List 1'
         },
         {
             listId: 1,
+            boardId: 0,
             name: 'Another list'
         },
         {
             listId: 2,
+            boardId: 1,
             name: 'List 3'
         }
     ],
     history: [
+    ],
+    boards: [
+        {
+            id: 0,
+            name: 'asd b1',
+            bg_color: '#ff00aa',
+            active: true,
+            user_id: 0
+        },
+        {
+            id: 1,
+            name: 'bord 2',
+            bg_color: '#ff00fa',
+            active: true,
+            user_id: 0
+        }
     ]
 };
 
@@ -117,6 +136,12 @@ export default function board(state = initialState, action = {}) {
             return {
                 ...state,
                 cards: [...action.cards]
+            }
+        case BOARD_ADDED:
+            return {
+                ...state,
+                ...state.boards.push(action.board),
+                history: updateHistory([...state.history], action.history)
             }
         default:
             return state;

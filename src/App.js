@@ -14,6 +14,7 @@ import UserRoute from "./components/routes/UserRoute";
 import GuestRoute from "./components/routes/GuestRoute";
 import TopNavigation from "./components/navigation/TopNavigation";
 import Board from "./components/pages/Board";
+import Boards from "./components/pages/Boards";
 
 const App = ({ location, isAuthenticated }) => (
   <div className="ui container">
@@ -27,8 +28,8 @@ const App = ({ location, isAuthenticated }) => (
     />
     <Route 
       location={location}   
-      path='/board' 
-      component={Board}
+      path='/boards' 
+      component={Boards}
     />
     <GuestRoute location={location} path="/login" exact component={LoginPage} />
     <GuestRoute

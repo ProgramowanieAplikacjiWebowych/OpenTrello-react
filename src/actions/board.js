@@ -1,6 +1,10 @@
 import { CARD_MOVED, LIST_REMOVED, LIST_ADDED, LIST_EDITTED, CARD_ADDED, CARD_REMOVED, 
     CARD_MOVED_ON_LIST, ADDED_COMMENT_TO_CARD, REMOVED_COMMENT_FROM_CARD, EDITTED_COMMENT, 
-    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, CARD_MARKED, CARDS_REMOVED, CARD_COPIED, CARD_RESTORED } from "../types";
+    EDITTED_CARD_NAME, LIST_MOVED, CARD_DESCRIPTION_EDITTED, CARD_MARKED, CARDS_REMOVED, CARD_COPIED,
+    CARD_RESTORED, BOARD_ADDED } from "../types";
+    
+import api from "../api";
+
 
 export const cardMoved = (data, from, to) => ({
     type: CARD_MOVED,
@@ -110,3 +114,15 @@ export const cardRestored = (cards, cardName) => ({
         cards,
         history: { event: cardName + ' restored.', time: new Date(), user: 'User 1' }
 });
+
+export const boardAdded = (board) => {
+    api.board.addBoard(board).then((res) => {
+        console.log("Add board", res);
+    }).catch(err => {
+        console.log("Add board", err.response, err.config);
+    });
+    return {
+        type: BOARD_ADDED,
+        board,
+        history: { event: board.name + ' added.', time: new Date(), user: 'User 1' }
+}};

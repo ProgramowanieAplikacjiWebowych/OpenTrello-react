@@ -32,10 +32,16 @@ const instance = axios.create({
         validateToken: token => instance.post("/api/auth/validate_token", { token }),
         resetPassword: data => instance.post("/api/auth/reset_password", { data })
     },
-    // boards: {
-    //   addCard: card => 
-    //     instance.post("http://localhost:5000/")
-    // },
+    board: {
+      addBoard: board => 
+        instance.post("/board", board).then(res => {
+            console.log('add_board', res);
+            return res
+        }).catch(err => {
+            console.log('add_board error', err);
+            return err;
+        })
+    },
     books: {
         fetchAll: () => instance.get("/api/books").then(res => res.data.books),
         create: book =>

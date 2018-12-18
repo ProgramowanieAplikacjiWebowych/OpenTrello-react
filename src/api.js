@@ -1,23 +1,44 @@
 import axios from "axios";
 
-export default {
-  user: {
-    login: credentials =>
-      axios.post("/api/auth", { credentials }).then(res => res.data.user),
-    signup: user =>
-      axios.post("/api/users", { user }).then(res => res.data.user),
-    confirm: token =>
-      axios
-        .post("/api/auth/confirmation", { token })
-        .then(res => res.data.user),
-    resetPasswordRequest: email =>
-      axios.post("/api/auth/reset_password_request", { email }),
-    validateToken: token => axios.post("/api/auth/validate_token", { token }),
-    resetPassword: data => axios.post("/api/auth/reset_password", { data })
-  },
-  books: {
-    fetchAll: () => axios.get("/api/books").then(res => res.data.books),
-    create: book =>
-      axios.post("/api/books", { book }).then(res => res.data.book)
-  }
+const instance = axios.create({
+    baseURL: 'http://localhost:5000',
+    // timeout: 1000,
+    // headers: {'X-Custom-Header': 'foobar'}
+});
+
+  export default {
+    user: {
+        login: credentials =>
+            instance.post("/login", credentials).then(res => {
+                console.log(res);
+                return res.data.user
+            }).catch(err => {
+                console.log('Login error', err.response);
+                console.log('Login error', err.message);
+                console.log('Login error', err.config);
+                if (err.config && err.config.data) {
+                    return err.config.data;
+                } 
+                return err;
+            }),
+        signup: user =>
+            instance.post("/register", user).then(res => res.data.user),
+        confirm: token =>
+            instance
+                .post("/api/auth/confirmation", { token })
+                .then(res => res.data.user),
+        resetPasswordRequest: email =>
+            instance.post("/api/auth/reset_password_request", { email }),
+        validateToken: token => instance.post("/api/auth/validate_token", { token }),
+        resetPassword: data => instance.post("/api/auth/reset_password", { data })
+    },
+    // boards: {
+    //   addCard: card => 
+    //     instance.post("http://localhost:5000/")
+    // },
+    books: {
+        fetchAll: () => instance.get("/api/books").then(res => res.data.books),
+        create: book =>
+            instance.post("/api/books", { book }).then(res => res.data.book)
+    }
 };

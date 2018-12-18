@@ -18,16 +18,16 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(thunk))
 );
 
-if (localStorage.bookwormJWT) {
-  const payload = decode(localStorage.bookwormJWT);
-  const user = {
-    token: localStorage.bookwormJWT,
-    email: payload.email,
-    confirmed: payload.confirmed
-  };
-  setAuthorizationHeader(localStorage.bookwormJWT);
-  store.dispatch(userLoggedIn(user));
-}
+// if (localStorage.bookwormJWT) {
+//   const payload = decode(localStorage.bookwormJWT);
+//   const user = {
+//     token: localStorage.bookwormJWT,
+//     email: payload.email,
+//     confirmed: payload.confirmed
+//   };
+//   setAuthorizationHeader(localStorage.bookwormJWT);
+//   store.dispatch(userLoggedIn(user));
+// }
 
 ReactDOM.render(
   <BrowserRouter>

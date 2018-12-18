@@ -49,12 +49,12 @@ const App = ({ location, isAuthenticated }) => (
       exact
       component={ResetPasswordPage}
     />
-    <UserRoute
+    {/* <UserRoute
       location={location}
-      path="/dashboard"
+      path="/board"
       exact
-      component={DashboardPage}
-    />
+      component={Board}
+    /> */}
     <UserRoute
       location={location}
       path="/books/new"

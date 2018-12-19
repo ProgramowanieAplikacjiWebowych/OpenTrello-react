@@ -4,28 +4,19 @@ import PropTypes from "prop-types";
 import { Route } from "react-router-dom";
 import HomePage from "./components/pages/HomePage";
 import LoginPage from "./components/pages/LoginPage";
-import DashboardPage from "./components/pages/DashboardPage";
 import SignupPage from "./components/pages/SignupPage";
-import ConfirmationPage from "./components/pages/ConfirmationPage";
 import ForgotPasswordPage from "./components/pages/ForgotPasswordPage";
 import ResetPasswordPage from "./components/pages/ResetPasswordPage";
-import NewBookPage from "./components/pages/NewBookPage";
-import UserRoute from "./components/routes/UserRoute";
+// import UserRoute from "./components/routes/UserRoute";
 import GuestRoute from "./components/routes/GuestRoute";
 import TopNavigation from "./components/navigation/TopNavigation";
-import Board from "./components/pages/Board";
+// import Board from "./components/pages/Board";
 import Boards from "./components/pages/Boards";
 
 const App = ({ location, isAuthenticated }) => (
   <div className="ui container">
     {isAuthenticated && <TopNavigation />}
     <Route location={location} path="/" exact component={HomePage} />
-    <Route
-      location={location}
-      path="/confirmation/:token"
-      exact
-      component={ConfirmationPage}
-    />
     <Route 
       location={location}   
       path='/boards' 
@@ -52,16 +43,10 @@ const App = ({ location, isAuthenticated }) => (
     />
     {/* <UserRoute
       location={location}
-      path="/board"
+      path="/boards"
       exact
       component={Board}
     /> */}
-    <UserRoute
-      location={location}
-      path="/books/new"
-      exact
-      component={NewBookPage}
-    />
   </div>
 );
 

@@ -180,7 +180,10 @@ class Board extends React.Component {
         const cardItem = {
             id: card ? card.id + 1 : 0,
             text: this.state.data.name,
-            listId: this.state.listToEdit.listId
+            listId: this.state.listToEdit.listId,
+            comments: [],
+            description: ' ',
+            marked: false
         }
         const listName = this.state.listToEdit.name;
 

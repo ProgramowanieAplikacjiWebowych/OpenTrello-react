@@ -41,10 +41,5 @@ const instance = axios.create({
             console.log('add_board error', err);
             return err;
         })
-    },
-    books: {
-        fetchAll: () => instance.get("/api/books").then(res => res.data.books),
-        create: book =>
-            instance.post("/api/books", { book }).then(res => res.data.book)
     }
 };

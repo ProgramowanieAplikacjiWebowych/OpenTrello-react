@@ -242,11 +242,11 @@ class List extends React.Component {
                 errors={this.state.errors} closePopup={this.closePopup} placeholder="Comment text here" data={this.state.data} onChange={this.onChange} />
         }
 
-        if (this.state.showCardDetails) {
-            const card = this.props.cards.find(item => {
-                return item.id === this.state.cardId;
-            });
+        const card = this.props.cards.find(item => {
+            return item.id === this.state.cardId;
+        });
 
+        if (this.state.showCardDetails && card) {
             cardDetails = <div style={{
                     position: "fixed",
                     width: "450px",

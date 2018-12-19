@@ -46,6 +46,7 @@ class CardDetails extends React.Component {
         }
         this.card = null;
         this.comment = null;
+        this.desc = null;
         e.target[0].value = '';
     }
 
